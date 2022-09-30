@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    active: ${deploy}
+  config:
+    use-legacy-processing: true
+

@@ -1,0 +1,15 @@
+# product db 기반
+# TODO - log, path, token
+server:
+  port: 9000
+
+spring:
+  profiles:
+    include:
+      - default
+      - jpa
+      - prod-postgres
+      - aws
+
+app:
+  version: "0.1.0"
