@@ -15,6 +15,7 @@ public class Member extends TimeEntity {
     private String email;
     private String profileName;
     private String refreshToken;
+    private int point;
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;

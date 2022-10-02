@@ -1,6 +1,7 @@
 package com.house.mbit.application.member.domain;
 
 public enum Mbti {
+    ALL("ALL"),
     ISTJ("ISTJ"),
     ISFJ("ISFJ"),
     INFJ("INFJ"),
