@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class InformationController {
 
     @GetMapping("/information")
-    public ApiResponse mbtiInfo(String mbti) {
+    public ApiResponse mbtiInfo(Mbti mbti) {
         //TODO mbti 정보 page 전달
         return ApiResponse.success(null);
     }
