@@ -18,4 +18,8 @@ public class Member extends TimeEntity {
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;
+
+    @Enumerated(EnumType.STRING)
+    private Mbti mbti;
+
 }
