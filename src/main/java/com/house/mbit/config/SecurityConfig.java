@@ -38,7 +38,7 @@ public class SecurityConfig {
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
-                .antMatchers("/api/member/login", "/api/member/login").permitAll()
+                .antMatchers("/auth/**").permitAll()
                 .antMatchers("/api/admin/**").hasRole(MemberRole.ADMIN.name())
                 .anyRequest().authenticated().and()
             .exceptionHandling()
@@ -73,6 +73,6 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/h2-console/**");
+        return (web) -> web.ignoring().antMatchers("/h2-console/*");
     }
 }
