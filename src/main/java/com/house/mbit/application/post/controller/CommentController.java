@@ -38,7 +38,7 @@ public class CommentController {
         return ApiResponse.success(new CommentDto());
     }
 
-    @GetMapping("/comment")
+    @GetMapping("/comments")
     public ApiResponse getComments(Pageable pageable, Principal principal) {
         //TODO 댓글 리스트
         return ApiResponse.success(new CommentDto());
