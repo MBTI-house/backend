@@ -1,6 +1,6 @@
 package com.house.mbit.application.member.controller;
 
-import com.house.mbit.application.member.dto.UserInfoDto;
+import com.house.mbit.application.member.dto.MemberInfoDto;
 import com.house.mbit.core.common.ApiResponse;
 import com.house.mbit.core.jwt.JwtTokenProvider;
 import com.house.mbit.core.util.CookieUtil;
@@ -23,7 +23,7 @@ public class AuthController {
 
 
     @PostMapping("/auth/login")
-    public ApiResponse login(@RequestBody UserInfoDto userInfoDto, HttpServletResponse response) {
+    public ApiResponse login(@RequestBody MemberInfoDto memberInfoDto, HttpServletResponse response) {
         //TODO 최초 로그인시 회원가입, 또는 유저체크(로그인을 위한)
         response.addCookie(CookieUtil.generator(ACCESS_TOKEN, null));
         response.addCookie(CookieUtil.generator(REFRESH_TOKEN, null));

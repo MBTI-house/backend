@@ -2,7 +2,9 @@ package com.house.mbit.core.jwt;
 
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,40 +13,26 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-    private static final String ISS = "SYSTEM";
-    private static final String SUB = "MBTI-TOKEN";
-    private static final long ACCESS_TOKEN_VALID_TIME = 1000 * 60 * 60;
-    private static final long REFRESH_TOKEN_VALID_TIME = 1000 * 60 * 60 * 30;
-    private static final String AUTHORIZATION = "Authorization";
+    private static final String ISS = "MBTI-SERVER";
     private static final String BEARER = "Bearer";
-
+    private static final long ACCESS_TOKEN_VALID_TIME = 1000L * 60 * 60;            //1시간
+    private static final long REFRESH_TOKEN_VALID_TIME = 1000L * 60 * 60 * 24 * 30; //30일
 
     @Value("${jwt.token.key}")
     private String key;
 
-    @PostConstruct
-    void init() {
-        key = Base64.getEncoder().encodeToString(key.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public boolean checkHeader(HttpServletRequest request) {
-        return request.getHeader(AUTHORIZATION) == null;
-    }
-
-    public String resolve(HttpServletRequest request) {
-        String token = request.getHeader(AUTHORIZATION);
+    public String parseBearer(HttpServletRequest request) {
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         return token.replace(BEARER + " ", "");
     }
@@ -60,43 +48,37 @@ public class JwtTokenProvider {
     private String createToken(Long userId, String role, Long validTokenTime) {
         return Jwts.builder()
             .setHeaderParam("typ", "JWT")
+            .setSubject(userId.toString())
             .setIssuer(ISS)
-            .setSubject(SUB)
-            .setAudience(userId.toString())
             .claim("role", role)
             .setExpiration(new Date(System.currentTimeMillis() + validTokenTime))
-            .signWith(SignatureAlgorithm.HS256, key)
+            .signWith(SignatureAlgorithm.HS512, key)
             .compact();
     }
 
-    public Boolean validate(String token, HttpServletRequest request) {
+    public Boolean validate(String token) {
         try {
-            Jwts.parser()
+            return Jwts.parser()
                 .setSigningKey(key)
                 .parseClaimsJws(token)
                 .getBody()
                 .getExpiration()
                 .after(new Date(System.currentTimeMillis()));
-            return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(); //TODO exception 별 처리
         }
-        return false;
     }
 
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parser()
+        Claims body = Jwts.parser()
             .setSigningKey(key)
             .parseClaimsJws(token)
             .getBody();
 
         Collection<? extends GrantedAuthority> authorities =
-            Arrays.stream(claims.get("role").toString().split(","))
+            Arrays.stream(body.get("role").toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
-
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        return new UsernamePasswordAuthenticationToken(body.getSubject(), null, authorities);
     }
 }
