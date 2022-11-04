@@ -38,8 +38,8 @@ public class SecurityConfig {
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
-                .antMatchers("/auth/**").permitAll()
-                .antMatchers("/api/admin/**").hasRole(MemberRole.ADMIN.name())
+                .antMatchers("/auth/**", "/health/check").permitAll()
+//                .antMatchers("/api/admin/**").hasRole(MemberRole.ADMIN.name())
                 .anyRequest().authenticated().and()
             .exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
@@ -69,10 +69,5 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/h2-console/*");
     }
 }

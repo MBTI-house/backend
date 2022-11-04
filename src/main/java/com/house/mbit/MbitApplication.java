@@ -11,5 +11,4 @@ public class MbitApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MbitApplication.class, args);
 	}
-
 }
