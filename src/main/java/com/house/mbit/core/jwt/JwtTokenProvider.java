@@ -37,18 +37,18 @@ public class JwtTokenProvider {
         return token.replace(BEARER + " ", "");
     }
 
-    public String createAccessToken(Long userId, String role) {
-        return createToken(userId, role, ACCESS_TOKEN_VALID_TIME);
+    public String createAccessToken(Long memberId, String role) {
+        return createToken(memberId, role, ACCESS_TOKEN_VALID_TIME);
     }
 
-    public String createRefreshToken(Long userId, String role) {
-        return createToken(userId, role, REFRESH_TOKEN_VALID_TIME);
+    public String createRefreshToken(Long memberId, String role) {
+        return createToken(memberId, role, REFRESH_TOKEN_VALID_TIME);
     }
 
-    private String createToken(Long userId, String role, Long validTokenTime) {
+    private String createToken(Long memberId, String role, Long validTokenTime) {
         return Jwts.builder()
             .setHeaderParam("typ", "JWT")
-            .setSubject(userId.toString())
+            .setSubject(memberId.toString())
             .setIssuer(ISS)
             .claim("role", role)
             .setExpiration(new Date(System.currentTimeMillis() + validTokenTime))

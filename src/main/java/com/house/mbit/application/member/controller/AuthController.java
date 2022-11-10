@@ -1,6 +1,9 @@
 package com.house.mbit.application.member.controller;
 
+import com.house.mbit.application.member.dto.MemberDto;
 import com.house.mbit.application.member.dto.MemberInfoDto;
+import com.house.mbit.application.member.service.MemberFacade;
+import com.house.mbit.application.member.service.MemberService;
 import com.house.mbit.core.common.ApiResponse;
 import com.house.mbit.core.jwt.JwtTokenProvider;
 import com.house.mbit.core.util.CookieUtil;
@@ -20,14 +23,16 @@ public class AuthController {
     private static final String REFRESH_TOKEN = "refresh_token";
 
     private final JwtTokenProvider jwtTokenProvider;
-
+    private final MemberFacade memberFacade;
 
     @PostMapping("/auth/login")
     public ApiResponse login(@RequestBody MemberInfoDto memberInfoDto, HttpServletResponse response) {
-        //TODO 최초 로그인시 회원가입, 또는 유저체크(로그인을 위한)
-        response.addCookie(CookieUtil.generator(ACCESS_TOKEN, null));
-        response.addCookie(CookieUtil.generator(REFRESH_TOKEN, null));
-        //TODO - refrershToken 저장
+        MemberDto memberDto = memberFacade.login(memberInfoDto.toEntity());
+
+        response.addCookie(CookieUtil.generator(
+            ACCESS_TOKEN, jwtTokenProvider.createAccessToken(memberDto.getId(), memberDto.getMemberRole().toString())));
+        response.addCookie(CookieUtil.generator(
+            REFRESH_TOKEN, jwtTokenProvider.createRefreshToken(memberDto.getId(), memberDto.getMemberRole().toString())));
 
         return ApiResponse.noContent();
     }
@@ -36,8 +41,6 @@ public class AuthController {
     public ApiResponse logout(HttpServletResponse response) {
         response.addCookie(CookieUtil.expire(ACCESS_TOKEN));
         response.addCookie(CookieUtil.expire(REFRESH_TOKEN));
-
-        //TODO - refreshToken 삭제
 
         return ApiResponse.noContent();
     }
