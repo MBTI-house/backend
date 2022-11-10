@@ -1,13 +1,13 @@
+#docker-compose.yml (Base)
 version: "3.9"
 services:
-  database:
+  app:
+    image: "amazoncorretto:11-alpine"
+    container_name: mbti_app
+    depends_on:
+      - db
+    command: java -jar /project/build/libs/mbti-0.0.1-SNAPSHOT.jar
+  db:
     image: "postgres:14.5"
-    container_name: mbti_postgres
-    restart: always
-    env_file:
-      - database/.env
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./database/data:/var/lib/postgresql/data
+    container_name: mbti_db
 

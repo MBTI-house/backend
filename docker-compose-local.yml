@@ -1,0 +1,16 @@
+#docker-compose-local.yml (local develop environment)
+version: "3.9"
+services:
+  app:
+    ports:
+      - "80:8080"
+  db:
+    environment:
+      - POSTGRES_PASSWORD=localpassword
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=mbti
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
