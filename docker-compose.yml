@@ -2,12 +2,28 @@
 version: "3.9"
 services:
   app:
-    image: "amazoncorretto:11-alpine"
     container_name: mbti_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:8080"
+      - "5005:5005"
     depends_on:
-      - db
-    command: java -jar /project/build/libs/mbti-0.0.1-SNAPSHOT.jar
+        - db
+    environment:
+      - spring.profiles.active=local
+    command: java -jar mbti-0.0.1-SNAPSHOT.jar
   db:
     image: "postgres:14.5"
     container_name: mbti_db
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=localpassword
+      - POSTGRES_DB=mbti
 
