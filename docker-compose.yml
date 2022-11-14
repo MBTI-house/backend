@@ -13,7 +13,7 @@ services:
         - db
     environment:
       - spring.profiles.active=local
-    command: java -jar mbti-0.0.1-SNAPSHOT.jar
+    command: java -jar build/libs/mbti-0.0.1-SNAPSHOT.jar
   db:
     image: "postgres:14.5"
     container_name: mbti_db
